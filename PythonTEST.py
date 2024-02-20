@@ -1,65 +1,49 @@
 import tkinter as tk
-from tkinter import filedialog, Text
+from tkinter import filedialog
 
-def retrieve_input():
-    text = form.get('1.0','end-1c')
-    return texte 
-
-def search_str(process_file, retrieve_input):
-    with open(file_path) as file:
-        # read all content of a file
-        content = file.read()
-        # check if string present in a file
-        if (text) in content:
-            print('string exist in a file')
-        else:
-            print('string does not exist in a file')
-
-root = tk.Tk()
-root.title("File Dialog Example")
-
-#mettre une zone de texte étitable sur la fenetre pour ecrire error et voir si le code marche
-
-text = Text(root, height=2)
-text.pack()
-
-
-#def file_path(file_path):
-
-
-
-def open_file_dialog():
-    file_path = filedialog.askopenfilename(title="Select a File", initialdir= '/home/lenny/Documents/script/python', filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-    if file_path:
-        selected_file_label.config(text=f"Selected File: {file_path}")
-        process_file(file_path)
-
-def process_file(file_path):
-    # Implement your file processing logic here
-    # For demonstration, let's just display the contents of the selected file
+def recherche_mot(file_path, mot):
+    lignes_trouvees = []
     try:
         with open(file_path, 'r') as file:
-            file_contents = file.read()
-            file_text.delete('1.0', tk.END)
-            file_text.insert(tk.END, file_contents)
+            for line_num, line in enumerate(file, start=1):
+                if mot.lower() in line.lower():
+                    lignes_trouvees.append(line_num)
+        return lignes_trouvees
     except Exception as e:
-        selected_file_label.config(text=f"Error: {str(e)}")
-    file_texte = file_contents
-    return file_texte 
-    
+        print(f"Une erreur s'est produite: {e}")
+        return []
 
-open_button = tk.Button(root, text="Open File", command=open_file_dialog)
-open_button.pack(padx=20, pady=20)
+def rechercher():
+    mot_a_rechercher = entry_mot.get()
+    if mot_a_rechercher:
+        file_path = filedialog.askopenfilename()
+        if file_path:
+            print(f"Fichier sélectionné: {file_path}")
+            lignes_trouvees = recherche_mot(file_path, mot_a_rechercher)
+            afficher_resultats(lignes_trouvees)
+    else:
+        print("Veuillez entrer un mot à rechercher.")
 
-open_button = tk.Button(root, text="search", command=search_str)
-open_button.pack(padx=20, pady=20)
+def afficher_resultats(lignes_trouvees):
+    result_window = tk.Toplevel(root)
+    result_window.title("Résultats de la recherche")
 
-selected_file_label = tk.Label(root, text="Selected File:")
-selected_file_label.pack()
+    if lignes_trouvees:
+        result_label = tk.Label(result_window, text=f"Le mot a été trouvé aux lignes suivantes : {', '.join(map(str, lignes_trouvees))}")
+        result_label.pack(padx=20, pady=20)
+    else:
+        result_label = tk.Label(result_window, text="Le mot n'a pas été trouvé dans le fichier.")
+        result_label.pack(padx=20, pady=20)
 
-file_text = tk.Text(root, wrap=tk.WORD, height=10, width=40)
-file_text.pack(padx=20, pady=20)
+# Interface graphique
+root = tk.Tk()
+root.title("Recherche de mot dans un fichier")
+root.geometry('600x500')
+
+entry_mot = tk.Entry(root, width=40)
+entry_mot.pack(pady=10)
+
+btn_search = tk.Button(root, text="Rechercher", command=rechercher)
+btn_search.pack(pady=20)
 
 root.mainloop()
-
-search_str(process_file, retrieve_input)

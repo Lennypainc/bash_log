@@ -1,8 +1,12 @@
 import tkinter as tk
 from tkinter import filedialog, Text
 
-def search_str(file_path, text):
-    with open(file_path, 'r') as file:
+def retrieve_input():
+    text = form.get('1.0','end-1c')
+    return texte 
+
+def search_str(process_file, retrieve_input):
+    with open(file_path) as file:
         # read all content of a file
         content = file.read()
         # check if string present in a file
@@ -19,9 +23,10 @@ root.title("File Dialog Example")
 text = Text(root, height=2)
 text.pack()
 
-def retrieve_input():
-    text = form.get('1.0','end-1c')
-    return text 
+
+#def file_path(file_path):
+
+
 
 def open_file_dialog():
     file_path = filedialog.askopenfilename(title="Select a File", initialdir= '/home/lenny/Documents/script/python', filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
@@ -39,7 +44,9 @@ def process_file(file_path):
             file_text.insert(tk.END, file_contents)
     except Exception as e:
         selected_file_label.config(text=f"Error: {str(e)}")
-
+    file_texte = file_contents
+    return file_texte 
+    
 
 open_button = tk.Button(root, text="Open File", command=open_file_dialog)
 open_button.pack(padx=20, pady=20)
@@ -55,6 +62,4 @@ file_text.pack(padx=20, pady=20)
 
 root.mainloop()
 
-search_str(file_text, 'text')
-
-
+search_str(process_file, retrieve_input)

@@ -2,7 +2,12 @@ import tkinter as tk
 from tkinter import filedialog
 
 file_path = None  # variable du chemin du fichier
+show_total_occurrence = None  # BooleanVar for checkbox
 
+def create_boolean_var():
+    global show_total_occurrence
+    show_total_occurrence = tk.BooleanVar()
+    show_total_occurrence.set(True)  # Initialize the checkbox state to True
 
 def recherche_mot(file_path, mot):
     occurrences_info = []
@@ -49,21 +54,21 @@ def changer_dossier():
     file_path = filedialog.askopenfilename()
     if file_path:
         print(f"Nouveau fichier sélectionné: {file_path}")
-    
+
 def afficher_resultats(total_occurrences, occurrences_info):
     result_window = tk.Toplevel(root)
     result_window.title("Résultats de la recherche")
 
-    if occurrences_info:
-        result_label_total = tk.Label(result_window, text=f"Le mot a été trouvé {total_occurrences} fois dans le fichier{file_path}.")
-        result_label_total.pack(padx=20, pady=10)
+    checkbox_show_total = tk.Checkbutton(result_window, text="ne pas afficher le total d'occurrences", variable=show_total_occurrence)
+    checkbox_show_total.pack(padx=20, pady=10)
 
+    if occurrences_info and not show_total_occurrence.get():
         for group in occurrences_info:
             result_label_group = tk.Label(result_window, text=f"Le mot a été trouvé {group['count']} fois de la ligne {group['start_line']} à la ligne {group['start_line'] + group['count'] - 1}.")
             result_label_group.pack(padx=20, pady=5)
-    else:
-        result_label = tk.Label(result_window, text="Le mot n'a pas été trouvé dans le fichier.")
-        result_label.pack(padx=20, pady=20)
+    elif show_total_occurrence.get():
+        result_label_total = tk.Label(result_window, text=f"Le mot a été trouvé {total_occurrences} fois dans le fichier {file_path}.")
+        result_label_total.pack(padx=20, pady=10)
 
 # Interface graphique
 root = tk.Tk()
@@ -78,5 +83,7 @@ btn_search.pack(pady=10)
 
 btn_change_folder = tk.Button(root, text="Changer de fichier", command=changer_dossier)
 btn_change_folder.pack(pady=10)
+
+create_boolean_var()  # Create BooleanVar after root window is created
 
 root.mainloop()

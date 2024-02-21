@@ -3,13 +3,15 @@ from tkinter import filedialog
 
 file_path = None  # variable du chemin du fichier
 show_total_occurrence = None  # BooleanVar for checkbox
+result_label = None  # Label to display results
 
 def create_boolean_var():
     global show_total_occurrence
     show_total_occurrence = tk.BooleanVar()
     show_total_occurrence.set(True)  # Initialize the checkbox state to True
 
-def recherche_mot(file_path, mot):
+def recherche_mot(mot):
+    global file_path
     occurrences_info = []
     current_group = {'start_line': 0, 'count': 0}
     total_occurrences = 0
@@ -35,7 +37,7 @@ def recherche_mot(file_path, mot):
         return 0, []
 
 def rechercher():
-    global file_path
+    global file_path, result_label
     mot_a_rechercher = entry_mot.get()
     if mot_a_rechercher:
         if file_path is None:
@@ -44,7 +46,7 @@ def rechercher():
                 return  # User canceled file selection
             print(f"Fichier sélectionné: {file_path}")
 
-        total_occurrences, occurrences_info = recherche_mot(file_path, mot_a_rechercher)
+        total_occurrences, occurrences_info = recherche_mot(mot_a_rechercher)
         afficher_resultats(total_occurrences, occurrences_info)
     else:
         print("Veuillez entrer un mot à rechercher.")
@@ -56,19 +58,18 @@ def changer_dossier():
         print(f"Nouveau fichier sélectionné: {file_path}")
 
 def afficher_resultats(total_occurrences, occurrences_info):
-    result_window = tk.Toplevel(root)
-    result_window.title("Résultats de la recherche")
-
-    checkbox_show_total = tk.Checkbutton(result_window, text="ne pas afficher le total d'occurrences", variable=show_total_occurrence)
-    checkbox_show_total.pack(padx=20, pady=10)
+    global result_label
+    result_label.pack_forget()  # Forget previous result label
 
     if occurrences_info and not show_total_occurrence.get():
+        result_text = ""
         for group in occurrences_info:
-            result_label_group = tk.Label(result_window, text=f"Le mot a été trouvé {group['count']} fois de la ligne {group['start_line']} à la ligne {group['start_line'] + group['count'] - 1}.")
-            result_label_group.pack(padx=20, pady=5)
+            result_text += f"Le mot a été trouvé {group['count']} fois de la ligne {group['start_line']} à la ligne {group['start_line'] + group['count'] - 1}.\n"
     elif show_total_occurrence.get():
-        result_label_total = tk.Label(result_window, text=f"Le mot a été trouvé {total_occurrences} fois dans le fichier {file_path}.")
-        result_label_total.pack(padx=20, pady=10)
+        result_text = f"Le mot a été trouvé {total_occurrences} fois dans le fichier {file_path}."
+
+    result_label = tk.Label(root, text=result_text)
+    result_label.pack(padx=20, pady=10)
 
 # Interface graphique
 root = tk.Tk()
@@ -85,5 +86,10 @@ btn_change_folder = tk.Button(root, text="Changer de fichier", command=changer_d
 btn_change_folder.pack(pady=10)
 
 create_boolean_var()  # Create BooleanVar after root window is created
+checkbox_show_total = tk.Checkbutton(root, text="Afficher le total d'occurrences", variable=show_total_occurrence)
+checkbox_show_total.pack(padx=20, pady=10)  # Checkbox in the main window
+
+result_label = tk.Label(root, text="")
+result_label.pack(padx=20, pady=10)  # Initial empty label
 
 root.mainloop()

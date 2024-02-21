@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 
+
 file_path = None  # variable du chemin du fichier
 show_total_occurrence = None  # BooleanVar for checkbox
 result_label = None  # Label to display results
@@ -75,6 +76,7 @@ def afficher_resultats(total_occurrences, occurrences_info):
 root = tk.Tk()
 root.title("Recherche de mot dans un fichier")
 root.geometry('600x500')
+root.configure(bg='#4fd5ed')
 
 entry_mot = tk.Entry(root, width=40)
 entry_mot.pack(pady=10)
